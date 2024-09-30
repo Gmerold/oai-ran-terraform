@@ -21,7 +21,7 @@ module "du" {
 }
 
 module "grafana-agent" {
-  source     = "../external/grafana-agent-k8s"
+  source     = "git::https://github.com/canonical/terraform-juju-sdcore//modules/external/grafana-agent-k8s"
   model_name = var.create_model == true ? juju_model.oai-ran[0].name : var.model_name
   channel    = var.grafana_agent_channel
   config     = var.grafana_agent_config
@@ -29,10 +29,26 @@ module "grafana-agent" {
 
 module "cos-lite" {
   count                    = var.deploy_cos ? 1 : 0
-  source                   = "../external/cos-lite"
+  source                   = "git::https://github.com/canonical/terraform-juju-sdcore//modules/external/cos-lite"
   model_name               = var.cos_model_name
   deploy_cos_configuration = true
   cos_configuration_config = var.cos_configuration_config
+}
+
+# Integrations for `fiveg_f1` endpoint
+
+resource "juju_integration" "du-f1" {
+  model = var.create_model == true ? juju_model.oai-ran[0].name : var.model_name
+
+  application {
+    name     = module.du.app_name
+    endpoint = module.du.fiveg_f1_endpoint
+  }
+
+  application {
+    name     = module.cu.app_name
+    endpoint = module.cu.fiveg_f1_endpoint
+  }
 }
 
 # Integrations for `logging` endpoint
@@ -66,6 +82,12 @@ resource "juju_integration" "du-logging" {
 }
 
 # Cross-model integrations
+
+resource "juju_offer" "cu-fiveg-gnb-identity" {
+  model = var.model_name
+  application_name = module.cu.app_name
+  endpoint = module.cu.fiveg_gnb_identity_endpoint
+}
 
 resource "juju_integration" "prometheus" {
   count = var.deploy_cos || var.use_existing_cos ? 1 : 0

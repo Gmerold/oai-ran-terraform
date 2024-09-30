@@ -56,7 +56,7 @@ variable "deploy_cos" {
   default     = false
 }
 variable "use_existing_cos" {
-  description = ""
+  description = "Allows integrating with an existing COS deployment. When set to `true`, `cos_model_name`, `prometheus_remote_write_offer_url` and `loki_logging_offer_url` are required."
   type        = bool
   default     = false
 }
@@ -68,14 +68,24 @@ variable "cos_model_name" {
 }
 
 variable "prometheus_remote_write_offer_url" {
-  description = ""
-  type = string
-  default = ""
+  description = "URL of Prometheus's `remote_write` offer. This variable is used to integrate with an existing COS deployment."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.use_existing_cos && length(var.prometheus_remote_write_offer_url) == 0
+    error_message = "Variable `prometheus_remote_write_offer_url` is required."
+  }
 }
 variable "loki_logging_offer_url" {
-  description = ""
-  type = string
-  default = ""
+  description = "URL of Loki's `logging` offer. This variable is used to integrate with an existing COS deployment."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.use_existing_cos && length(var.loki_logging_offer_url) == 0
+    error_message = "Variable `loki_logging_offer_url` is required."
+  }
 }
 
 variable "cos_configuration_config" {
