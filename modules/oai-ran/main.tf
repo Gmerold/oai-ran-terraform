@@ -77,7 +77,7 @@ resource "juju_integration" "prometheus" {
   }
 
   application {
-    offer_url = module.cos-lite[0] ? module.cos-lite[0].prometheus_remote_write_offer_url : var.prometheus_remote_write_offer_url
+    offer_url = length(module.cos-lite[0]) != 0 ? module.cos-lite[0].prometheus_remote_write_offer_url : var.prometheus_remote_write_offer_url
   }
 }
 
@@ -91,6 +91,6 @@ resource "juju_integration" "loki" {
   }
 
   application {
-    offer_url = module.cos-lite[0] ? module.cos-lite[0].loki_logging_offer_url : var.loki_logging_offer_url
+    offer_url = length(module.cos-lite[0]) != 0 ? module.cos-lite[0].loki_logging_offer_url : var.loki_logging_offer_url
   }
 }
