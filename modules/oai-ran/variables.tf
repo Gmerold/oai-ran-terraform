@@ -73,7 +73,7 @@ variable "prometheus_remote_write_offer_url" {
   default     = ""
 
   validation {
-    condition     = var.use_existing_cos && length(var.prometheus_remote_write_offer_url) == 0
+    condition     = var.use_existing_cos && length(var.prometheus_remote_write_offer_url) != 0
     error_message = "Variable `prometheus_remote_write_offer_url` is required."
   }
 }
@@ -83,7 +83,7 @@ variable "loki_logging_offer_url" {
   default     = ""
 
   validation {
-    condition     = var.use_existing_cos && length(var.loki_logging_offer_url) == 0
+    condition     = var.use_existing_cos && length(var.loki_logging_offer_url) != 0
     error_message = "Variable `loki_logging_offer_url` is required."
   }
 }
