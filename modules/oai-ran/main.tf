@@ -67,11 +67,6 @@ resource "juju_integration" "du-logging" {
 
 # Cross-model integrations
 
-data "juju_model" "cos_model" {
-  count = var.deploy_cos || var.use_existing_cos ? 1 : 0
-  name = var.cos_model_name
-}
-
 resource "juju_integration" "prometheus" {
   count = var.deploy_cos || var.use_existing_cos ? 1 : 0
   model = var.model_name
@@ -82,7 +77,7 @@ resource "juju_integration" "prometheus" {
   }
 
   application {
-    offer_url = module.cos-lite[0].prometheus_remote_write_offer_url || var.prometheus_remote_write_offer_url
+    offer_url = module.cos-lite[0] ? module.cos-lite[0].prometheus_remote_write_offer_url : var.prometheus_remote_write_offer_url
   }
 }
 
@@ -96,6 +91,6 @@ resource "juju_integration" "loki" {
   }
 
   application {
-    offer_url = module.cos-lite[0].loki_logging_offer_url
+    offer_url = module.cos-lite[0] ? module.cos-lite[0].loki_logging_offer_url : var.loki_logging_offer_url
   }
 }
